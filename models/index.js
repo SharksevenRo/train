@@ -5,8 +5,8 @@ var reader = require('../utils/reader');
 
 var db = {};
 
-var sequelize = new Sequelize('postgres', 'postgres', 'xiaovsharkseven', {
-  host: '120.77.82.238',
+var sequelize = new Sequelize('gospel', 'gospel', 'dodoraCN2016@gospely', {
+  host: 'gospely.com',
   dialect: 'postgresql',
   pool: {
     max: 5,
@@ -106,7 +106,8 @@ var sequelize = new Sequelize('postgres', 'postgres', 'xiaovsharkseven', {
 
         return yield this.find({
           where: {
-            id: id
+            id: id,
+            isDeleted: 0
           }
         });
       },
@@ -128,32 +129,55 @@ var sequelize = new Sequelize('postgres', 'postgres', 'xiaovsharkseven', {
         });
       },
       create: function*(item) {
+
+        var date = new Date();
+        //date.setHours(date.getHours() + 8);
+        item.createat = date;
+        item.update = date;
         var row = this.build(item);
         return yield row.save();
       },
       count: function*(item) {
         item.isDeleted = 0;
+        if(this.name == 'gospel_applications'){
+            if(item.type != null){
+                var sql = this.countInit(item);
+                if (sql != null && sql != undefined) {
+                  return yield sequelize.query(sql, {
+                    replacements: item,
+                    type: sequelize.QueryTypes.SELECT
+                  })
 
-        if (this.countInit != null && this.countInit != undefined) {
-          var sql = this.countInit(item);
-          if (sql != null && sql != undefined) {
-            return yield sequelize.query(sql, {
-              replacements: item,
-              type: sequelize.QueryTypes.SELECT
-            })
+                }
+            }else{
+                return yield this.findAll({
+                  where: item,
+                  attributes: [
+                    [sequelize.fn('COUNT', sequelize.col('id')), 'all']
+                  ]
+                });
+            }
+        }else {
+            if ((this.countInit != null && this.countInit != undefined)) {
+              var sql = this.countInit(item);
+              if (sql != null && sql != undefined) {
+                return yield sequelize.query(sql, {
+                  replacements: item,
+                  type: sequelize.QueryTypes.SELECT
+                })
 
+              }
+
+            }
+            return yield this.findAll({
+              where: item,
+              attributes: [
+                [sequelize.fn('COUNT', sequelize.col('id')), 'all']
+              ]
+            });
           }
-
         }
-        return yield this.findAll({
-          where: item,
-          attributes: [
-            [sequelize.fn('COUNT', sequelize.col('id')), 'all']
-          ]
-        });
-      }
     },
-
     instanceMethods: {
 
     }

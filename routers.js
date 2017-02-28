@@ -1,5 +1,4 @@
 var Controllers = require('./controllers')
-var fs = require ('./controllers/fs')
 // var pay = require('./server/pay');
 // var getWechatAuths = require('./server/auth/wechat');
 
@@ -21,7 +20,6 @@ module.exports = function(router) {
 
 	//添加路由
 	controllers.route(router);
-	router.post('/fs/upload', fs.upload);
 
 	// //添加微信支付和支付支付异步回调路由
 	//

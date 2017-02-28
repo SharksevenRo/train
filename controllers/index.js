@@ -112,7 +112,7 @@ Controllers.prototype.route = function(router) {
 }
 Controllers.prototype.index = function*(next) {
 
-  this.body = util.resp('200', 'xiaov API List Version 1.0 views');
+  this.body = util.resp('200', 'train API List Version 1.0 views');
 }
 
 module.exports = Controllers;
