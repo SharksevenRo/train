@@ -13,6 +13,7 @@ var db = require('./models');
 var mount = require('koa-mount');
 var multer = require('koa-multer');
 var models = require('./models');
+var fs = require('fs');
 
 
 
@@ -113,8 +114,41 @@ app.io.use(function*(next) {
     // }
 });
 
+fs.readFile(__dirname + '/source.html', {
+    flag: 'r+',
+    encoding: 'utf8'
+}, function(error, data) {
 
+    var reg = /<i.+?class=('|")?([^'"]+)('|")?(?:\s+|>)/gim;
+    var arr = [];
+    while(tem=reg.exec(data)){
+        arr.push("\n'" + tem[2] + "'");
+    }
+    var newArry = new Array();
+    for (var i = 0; i < arr.length; i++) {
 
+        var isExit = false;
+        var temp = arr[i].split('-');
+        if(temp < 2){
+            isExit = true;
+            break;
+        }else {
+            for (var j = 0; j < newArry.length; j++) {
+                if(arr[i] == newArry[j]){
+                    isExit = true;
+                    break;
+                }
+            }
+        }
+        if(!isExit){
+            newArry.push(arr[i])
+        }
+    }
+    console.log(newArry);
+    fs.writeFile(__dirname + '/icon.js', newArry.toString(),function(error, res){
+        console.log(res);
+    })
+});
 app.io.route('join listen',function* (next,userId) {
     console.log(userId);
     var socket_id = this.socket.id;
