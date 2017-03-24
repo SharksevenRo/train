@@ -1,6 +1,6 @@
 module.exports = {
 
-	isAuth: test,
+	isAuth: true,
 
 	isInit: 0,
 	port: 8089,
